@@ -10,7 +10,7 @@
    2. 搜索全文可见 `Timing Group` 配置，并实例化对应 `Timing Group`。
    3. 搜索全文可见以 `timing` 开头的行，并自动分析，将其加入对应 `Timing Group` 的 `BPM List`。
    4. 逐行将 `(time, trace)` 形式的 `Tap` 实例化，并将其以字典形式追加到对应 `Timing Group` 的 `TapList` 里。计算其每一帧时所位于轨道的相对位置，并追加在对应实例的 `PositionList` 列表里。
-   5. 逐行将 `arc(...)` 形式的 `Arc` 计算逐帧所在位置，并追加在对应实例的 `PositionList` 列表里；计算其每 `1/100` 帧间隔的 Arc 切片中心点与第 1 帧切片中心点的 `x, y, z` 坐标插值，并将其追加到 `deltaPosition` 列表里。并将实例本身以字典形式追加在对应 `Timing Group` 的 `ArcList` 列表里。
+   5. 逐行将 `arc(...)` 形式的 `Arc` 计算逐帧所在位置，并追加在对应实例的 `PositionList` 列表里；计算其每 `1/100` 帧间隔的 Arc 切片中心点与第 1 帧切片中心点的 `x, y, z` 坐标差值，并将其追加到 `deltaPosition` 列表里。并将实例本身以字典形式追加在对应 `Timing Group` 的 `ArcList` 列表里。
    6. 逐行将 `hold(...)` 形式的 `Hold` 计算逐帧所在的起始结束位置，并追加在对应的 `PositionList` 里。并将实例本身以字典形式追加在对应 `Timing Group` `HoldList` 列表里。
    7. 忽略所有 `HideGroup`，`Camera` 等的字样。这些内容将会在下个大版本中被加入。对于以上所有的 `Note`，将其产生一个 `Combo` 的时间戳追加到全局列表 `ComboNow` 中。
 
