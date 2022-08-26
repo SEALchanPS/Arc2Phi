@@ -40,6 +40,7 @@ def validate_trace(touch_time: float, note_type: str, trace: int):
         raise ArcChartException(
             f"在处理打击时间为 {touch_time}s 的 {note_type} 时出现问题：轨道 {trace} 超出允许范围。")
 
+
 def validate_position(touch_time: float, note_type: str, x_position: float, y_position: float):
     """该函数用来校验 Note 是否为超界的。
 
@@ -50,9 +51,12 @@ def validate_position(touch_time: float, note_type: str, x_position: float, y_po
         y_position (float): 该 Note 被打击，刚开始被打击或结束被打击的纵向位置。
     """
     if x_position < 0 or x_position > 1:
-        print(f"谱面时间为 {touch_time} 时，处于打击的 {note_type} 是非正常的超界 Note。其横向坐标为 {x_position}。")
+        print(
+            f"谱面时间为 {touch_time} 时，处于打击的 {note_type} 是非正常的超界 Note。其横向坐标为 {x_position}。")
     if y_position < 0 or y_position > 1:
-        print(f"谱面时间为 {touch_time} 时，处于打击的 {note_type} 是非正常的超界 Note。其纵向坐标为 {y_position}。")
+        print(
+            f"谱面时间为 {touch_time} 时，处于打击的 {note_type} 是非正常的超界 Note。其纵向坐标为 {y_position}。")
+
 
 class BaseNotes:
     """所有 Note 的基类。
