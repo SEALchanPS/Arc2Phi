@@ -15,7 +15,7 @@ class ArcChartException(Exception):
             error_info (str): 异常发生时的说明
         """
         super().__init__(self)
-        self.error_info = error_info
+        self.error_info = f"{error_info}\n在向他人反馈问题时，请附带主目录下的 Log，报错内容和谱面文件以精确定位问题。"
 
     def __str__(self):
         return self.error_info
