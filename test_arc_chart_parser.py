@@ -12,7 +12,7 @@ class TestArcChartParser(unittest.TestCase):
         """该函数用来测试 Arcaea 谱面解析器是否会对越界的轨道编号抛出异常。
         """
         with self.assertRaises(ArcChartException):
-            out_of_range_tap = Tap(0, 5)
+            Tap(0, 5)
 
 
 if __name__ == "__main__":

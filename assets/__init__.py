@@ -3,8 +3,6 @@
 该模块负责生成的元素/实例：Tap, Hold, Sky Note, Arc, Timing Group.
 """
 
-import logging
-
 
 class ArcChartException(Exception):
     """这个类用来抛出解析 Arcaea 谱面时的异常。
@@ -94,7 +92,7 @@ class Hold(BaseNotes):
     """Hold Note 类
     """
 
-    def __init__(self, start_time: float, end_time: float, trace: float) -> None:
+    def __init__(self, start_time: float, end_time: float, trace: int) -> None:
         """该函数用来生成一个 Hold Note。
 
         Args:
