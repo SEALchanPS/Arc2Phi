@@ -60,14 +60,16 @@ class BaseNotes:
     """所有 Note 的基类。
     """
 
-    def __init__(self, touch_time: float, note_type: int) -> None:
+    def __init__(self, touch_time: float, note_type: int, bpm_list: dict) -> None:
         """该函数用来初始化生成所有 Note。
 
         Args:
             touch_time (float): 该 Note 被打击或最初被打击的时间。
             note_type (int): 该 Note 的按键类型：地键/Tap 为 1，长条/Hold 为 2，天键/Sky Note 为 3
                 音弧/Arc 为 4，将会被最终转为黄键/Drag (5).
+            bpm_list (dict): 该谱面的 bpmList。各子类初始化函数将会根据该字典来计算相对位置。
         """
+        self.bpmList = bpm_list
         self.touch_time = touch_time
         self.note_type = note_type
 
@@ -76,7 +78,7 @@ class Tap(BaseNotes):
     """Tap Note 类
     """
 
-    def __init__(self, touch_time: float, trace: int) -> None:
+    def __init__(self, touch_time: float, trace: int, bpm_list: dict) -> None:
         """该函数用来生成一个 Tap Note。
 
         Args:
@@ -84,7 +86,7 @@ class Tap(BaseNotes):
             trace (int): 该 Tap 落在轨道的编号，以 1-4 中的一个整数表示。
         """
         validate_trace(touch_time, "Tap", trace)
-        super().__init__(touch_time, 1)
+        super().__init__(touch_time, 1, bpm_list)
         self.trace = trace
 
 
@@ -92,7 +94,7 @@ class Hold(BaseNotes):
     """Hold Note 类
     """
 
-    def __init__(self, start_time: float, end_time: float, trace: int) -> None:
+    def __init__(self, start_time: float, end_time: float, trace: int, bpm_list: dict) -> None:
         """该函数用来生成一个 Hold Note。
 
         Args:
@@ -101,7 +103,7 @@ class Hold(BaseNotes):
             trace (int): 该 Hold 落在轨道的编号。以 1-4 中的一个整数表示。
         """
         validate_trace(start_time, "Hold", trace)
-        super().__init__(start_time, 2)
+        super().__init__(start_time, 2, bpm_list)
         self.end_time, self.trace = end_time, trace
 
 
@@ -109,7 +111,7 @@ class SkyNote(BaseNotes):
     """Sky Note 类
     """
 
-    def __init__(self, touch_time: float, x_position: float, y_position: float) -> None:
+    def __init__(self, touch_time: float, x_position: float, y_position: float, bpm_list: dict) -> None:
         """该函数用来生成一个 Sky Note。
 
         Args:
@@ -118,7 +120,7 @@ class SkyNote(BaseNotes):
             y_position (float): 该 Sky Note 被打击时落在的位置
         """
         validate_position(touch_time, "Sky Note", x_position, y_position)
-        super().__init__(touch_time, 3)
+        super().__init__(touch_time, 3, bpm_list)
         self.x_position, self.y_position = x_position, y_position
 
 
@@ -128,7 +130,7 @@ class Arc(BaseNotes):
 
     def __init__(
         self, start_time: float, end_time: float, x_start_pos: float, y_start_pos: float,
-        x_end_pos: float, y_end_pos: float, arc_color: int, none_value: str, is_trace: bool
+        x_end_pos: float, y_end_pos: float, arc_color: int, none_value: str, is_trace: bool, bpm_list: dict
     ) -> None:
         """该函数用来生成一个 Arc Note。
 
@@ -145,22 +147,7 @@ class Arc(BaseNotes):
         """
         validate_position(start_time, "Arc", x_start_pos, y_start_pos)
         validate_position(end_time, "Arc", x_end_pos, y_end_pos)
-        super().__init__(start_time, 4)
+        super().__init__(start_time, 4, bpm_list)
         self.end_time, self.x_start_pos, self.y_start_pos, self.x_end_pos, self.y_end_pos, \
             self.arc_color, self.none_value, self.is_trace = end_time, x_start_pos, y_start_pos, \
             x_end_pos, y_end_pos, arc_color, none_value, is_trace
-
-
-class TimingGroup:
-    """Timing Group 类
-    """
-
-    def __init__(self, tg_num: int, bpm_list: list):
-        """该函数用来实例化一个 TimingGroup。
-
-        Args:
-            tg_num (int): 该 TimingGroup 在全谱面的编号。
-            bpm_list (list): 该 TimingGroup 内 BPM 的变化列表。
-        """
-        self.tg_num = tg_num
-        self.bpm_list = bpm_list
