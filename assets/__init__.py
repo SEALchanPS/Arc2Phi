@@ -24,7 +24,7 @@ class ArcChartException(Exception):
 
 
 def validate_trace(touch_time: float, note_type: str, trace: int):
-    """该函数用来校验 Note 所在的轨道是否超出允许。。
+    """该函数用来校验 Note 所在的轨道是否越界。
 
     对于所有的 Tap 和 Hold，它们所在的轨道编号只能是 1-4 中的一个整数。
 
