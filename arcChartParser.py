@@ -28,6 +28,7 @@ class ArcChart:
         self.file_lines = file_lines
         line_num = 0
         self.last_end_line_num = 0
+        self.this_end_line_num = 0
         self.timing_group_value_dict = {}
         got_timing_group_0 = False
         for line in self.file_lines:
@@ -40,7 +41,7 @@ class ArcChart:
             elif line.startswith("-"):
                 self.last_start_line_num = line_num
             elif line.startswith("timinggroup()"):
-                if not self.last_end_line_num == 0:
+                if not self.this_end_line_num == 0:
                     raise ArcChartException(
                         f"解析谱面文件的第 {line_num} 行时发生未知错误。它最有可能的触发原因是一个位于 {self.last_start_line_num} - "
                         f"{self.last_end_line_num} 的 Timing Group 未完全闭合导致的。")
@@ -144,7 +145,11 @@ class TimingGroup:
             line_num += 1
             print(f"正在分析行 {line_num} 内容为 {line}……")
 
-            if line.startswith("("):
+            if line.startswith("timing"):
+                print("这是一个 Timing 设定行 ↑ 已跳过。")
+            elif line.startswith("}"):
+                print("这是一个 Timing Group 结束行 ↑ 已跳过。")
+            elif line.startswith("("):
                 self.tap(line)
             elif line.startswith("arc"):
                 self.arc(line)
