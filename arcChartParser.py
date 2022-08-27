@@ -6,18 +6,32 @@ import pickle
 from assets import *
 
 
-def write_list_to_file(file, list_):
+def write_list_to_file(file: str, list_: list):
+    """该函数可以使用 pickle 工具将列表写入文件。
+
+    Args:
+        file (str): 文件所在的路径。
+        list_ (list): 需要写入文件的列表。
+    """
+
+    # 如果已经存在该文件则删除
     if os.path.exists(file):
         os.remove(file)
     with open(file, "xb") as file:
         pickle.dump(list_, file)
 
 
-def write_str_to_file(file, str):
+def write_str_to_file(file: str, str_: str):
+    """该函数将字符串写入文件。
+
+    Args:
+        file (str): 文件所在的路径。
+        str_ (str): 需要写入文件的字符串。
+    """
     if os.path.exists(file):
         os.remove(file)
     with open(file, "x", encoding="utf-8") as file:
-        file.write(str)
+        file.write(str_)
 
 
 class ArcChart:
@@ -25,26 +39,52 @@ class ArcChart:
     """
 
     def __init__(self, file_lines: list):
+        """该函数用来创建一个 Arcaea 谱面实例。
+
+        Args:
+            file_lines (list): 谱面文件内所有行组成的列表。
+
+        Raises:
+            ArcChartException: 当解析谱面文件时发生任意错误，即抛出该错误。
+        """
+
+        # 设置该谱面实例的谱面文件，并初始化谱面文件行数计数器
         self.file_lines = file_lines
         line_num = 0
+
+        # 初始化谱面异常计数器变量
         self.last_end_line_num = 0
         self.this_end_line_num = 0
+
+        # 初始化谱面 Timing Group 构成列表
         self.timing_group_value_dict = {}
         got_timing_group_0 = False
+
+        # 开始遍历文件
         for line in self.file_lines:
             line_num += 1
+
+            # 取得 AudioOffset 谱面音乐延迟
             if line.startswith("AudioOffset"):
                 offset_value = line.replace("AudioOffset:", "")
                 self.offset = offset_value
                 self.set_offset(offset_value)
                 self.last_start_line_num = line_num
+
+            # 过滤间隔行
             elif line.startswith("-"):
                 self.last_start_line_num = line_num
+
+            # 取得一个新的 Timing Group（注：Timing Group 从第 0 个开始计数）
             elif line.startswith("timinggroup()"):
+
+                # 判断上一个 Timing Group 是否已闭合
                 if not self.this_end_line_num == 0:
                     raise ArcChartException(
                         f"解析谱面文件的第 {line_num} 行时发生未知错误。它最有可能的触发原因是一个位于 {self.last_start_line_num} - "
                         f"{self.last_end_line_num} 的 Timing Group 未完全闭合导致的。")
+
+                # 判断这是否是第 1 个 Timing Group。如果是，则界定 Timing Group 0。
                 if not got_timing_group_0:
                     self.last_end_line_num = line_num - 1
                     self.timing_group_value_dict[self.last_start_line_num] = self.last_end_line_num
@@ -54,17 +94,26 @@ class ArcChart:
                     got_timing_group_0 = True
                 elif got_timing_group_0:
                     self.this_start_line_num = line_num
+
+            # 判断该行是否为某个 Timing Group 的结束行
             elif line.startswith("}"):
                 self.this_end_line_num = line_num
+
+                # 判定这个 Timing Group 是否有开始标志
                 if not self.this_start_line_num:
                     raise ArcChartException(
                         f"解析谱面文件的第 {line_num} 时发现了一个 Timing Group 的结束标志，但是并未找到开始标志。")
                 else:
+                    # 保存这个新的 Timing Group
                     self.timing_group_value_dict[self.this_start_line_num] = self.this_end_line_num
+
+                # 归零谱面异常计数器变量
                 self.last_start_line_num = self.this_start_line_num
                 self.last_end_line_num = self.this_end_line_num
                 self.this_end_line_num = 0
                 self.this_start_line_num = 0
+
+        # 结束时判定谱面特殊异常情况
         if not got_timing_group_0:
             self.timing_group_value_dict[self.last_start_line_num + 1] = len(self.file_lines)
             self.this_start_line_num, self.this_end_line_num = 0, 0
@@ -73,6 +122,8 @@ class ArcChart:
                 f"在对该谱面的 Timing Group 进行拆分时发生了未知错误，它最有可能的触发原因是一个开始行为 {self.this_start_line_num} 的Timing Group 没有结束标志。")
         timing_group_num = 0
         timing_group_list = []
+
+        # 遍历以创建 Timing Group 实例
         for single_timing_group in self.timing_group_value_dict.items():
             this_group_chart_start_line = single_timing_group[0]
             this_group_chart_end_line = single_timing_group[1]
@@ -81,6 +132,8 @@ class ArcChart:
                 TimingGroup(
                     timing_group_num, this_group_chart_lines))
             timing_group_num += 1
+
+        # 将 Timing Group 实例保存至文件
         file = "timing_group_list.txt"
         list_ = timing_group_list
         write_list_to_file(file, list_)
@@ -88,7 +141,7 @@ class ArcChart:
         # 考虑没有 `AudioOffset` 的情况
         if not self.offset:
             self.offset = 0
-            self.set_offset(0)
+            self.set_offset("0")
 
     def set_offset(self, offset):
         """该函数用来将设定的谱面音乐延迟写入配置文件。
