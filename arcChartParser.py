@@ -115,7 +115,8 @@ class ArcChart:
 
         # 结束时判定谱面特殊异常情况
         if not got_timing_group_0:
-            self.timing_group_value_dict[self.last_start_line_num + 1] = len(self.file_lines)
+            self.timing_group_value_dict[self.last_start_line_num +
+                                         1] = len(self.file_lines)
             self.this_start_line_num, self.this_end_line_num = 0, 0
         if self.this_end_line_num != 0 or self.this_start_line_num != 0:
             raise ArcChartException(
@@ -155,7 +156,7 @@ class ArcChart:
         write_str_to_file(file, what_to_write)
 
 
-class TimingGroup:
+class TimingGroup():
     """该类用来创建 Timing Group 的实例。
     """
 
@@ -171,6 +172,8 @@ class TimingGroup:
         """
 
         # 初始化变量
+        self.arctap_list = None
+        self.arc_list = []
         self.bpm_list_line = []
         self.bpm_list_dict = {}
         self.tap_list = []
@@ -220,7 +223,15 @@ class TimingGroup:
         Args:
             line (str): 该音弧在谱面文件中的相关行。
         """
-        pass
+
+        arc_info: list = line.replace("(", "").replace(")", "").split(",")
+        this_arc = Arc(float(arc_info[0]), float(arc_info[1]), float(arc_info[2]), float(arc_info[3]), str(arc_info[4]), float(
+            arc_info[5]), float(arc_info[6]), int(arc_info[7]), str(arc_info[8]), bool(arc_info[9]), self.bpm_list_dict)
+        self.arc_list.append(this_arc)
+        if line.split("[")[1]:
+            arctap_info = line.replace("]", "").split("[")
+            arctap_list = arctap_info[0].split(",")
+            this_arc.arctap_list = arctap_list
 
     def tap(self, line: str):
         """该函数用来生成一个 Tap 的实例。

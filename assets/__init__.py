@@ -69,16 +69,23 @@ class BaseNotes:
                 音弧/Arc 为 4，将会被最终转为黄键/Drag (5).
             bpm_list (dict): 该谱面的 bpmList。各子类初始化函数将会根据该字典来计算相对位置。
         """
-        self.bpmList = bpm_list
+        self.bpm_list = bpm_list
         self.touch_time = touch_time
         self.note_type = note_type
+        self.pos_per_frame = {}
+        with open("song_total_time.txt", 'r', encoding="utf-8") as time_:
+            self.song_total_time = time_.read()
+        self.get_starting_position(self.bpm_list)
+
+    def get_starting_position(self, bpm_list: dict):
+        pass
 
 
 class Tap(BaseNotes):
     """Tap Note 类
     """
 
-    def __init__(self, touch_time: float, trace: int, bpm_list: dict) -> None:
+    def __init__(self, touch_time: float, trace: int, bpm_list: dict[float, float]) -> None:
         """该函数用来生成一个 Tap Note。
 
         Args:
@@ -129,7 +136,7 @@ class Arc(BaseNotes):
     """
 
     def __init__(
-        self, start_time: float, end_time: float, x_start_pos: float, y_start_pos: float,
+        self, start_time: float, end_time: float, x_start_pos: float, y_start_pos: float, movement_type: str,
         x_end_pos: float, y_end_pos: float, arc_color: int, none_value: str, is_trace: bool, bpm_list: dict
     ) -> None:
         """该函数用来生成一个 Arc Note。
@@ -139,6 +146,7 @@ class Arc(BaseNotes):
             end_time (float): 该 Arc 被结束打击的时间。
             x_start_pos (float): 该 Arc 被开始打击时的横向位置（0-1 之间的浮点数）
             y_start_pos (float): 该 Arc 被结束打击时的纵向位置（0-1 之间的浮点数）
+            movement_type (str): 该 Arc 的坐标变化移动类型。
             x_end_pos (float): 该 Arc 被结束打击时的横向位置（0-1 之间的浮点数）
             y_end_pos (float): 该 Arc 被结束打击时的纵向位置（0-1 之间的浮点数）
             arc_color (int): 该 Arc 的颜色（0 为蓝色，1 为红色，2 为绿色）
@@ -147,7 +155,7 @@ class Arc(BaseNotes):
         """
         validate_position(start_time, "Arc", x_start_pos, y_start_pos)
         validate_position(end_time, "Arc", x_end_pos, y_end_pos)
-        super().__init__(start_time, 4, bpm_list)
         self.end_time, self.x_start_pos, self.y_start_pos, self.x_end_pos, self.y_end_pos, \
             self.arc_color, self.none_value, self.is_trace = end_time, x_start_pos, y_start_pos, \
             x_end_pos, y_end_pos, arc_color, none_value, is_trace
+        super().__init__(start_time, 4, bpm_list)
