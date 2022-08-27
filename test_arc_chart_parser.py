@@ -36,6 +36,8 @@ class TestArcChartParser(unittest.TestCase):
         offset_is_given = random.randint(-5000, 0)
         bytes_to_give = [f'AudioOffset: {offset_is_given}', '---', 'timing(0,3)', '(1,1)', 'hold(2,3,4)']
         arcChart = ArcChart(bytes_to_give)
+        with open("timing_group_list.txt", "rb") as tg_list_file:
+            timing_group_list = pickle.load(tg_list_file)
         self.assertEqual(timing_group_list[0].tg_num, 0)
         self.assertEqual(timing_group_list[0].tap_list[0].trace, 1)
 
