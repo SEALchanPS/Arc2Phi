@@ -68,7 +68,8 @@ class TestArcChartParser(unittest.TestCase):
     def test_base_not_position_get(self):
         with open("song_total_time.txt", "w", encoding="utf-8") as total_time_file:
             total_time_file.write("2")
-        test_note = BaseNotes(1000, 1, {0:100, 1000:200})
+        test_note = BaseNotes(1500, 1, {0:100, 1000:200})
+        self.assertEqual(test_note.time_0_position, 200000 * 0.000001)
 
 
 if __name__ == "__main__":

@@ -4,6 +4,9 @@
 """
 
 
+from bisect import bisect_left
+
+
 class ArcChartException(Exception):
     """这个类用来抛出解析 Arcaea 谱面时的异常。
     """
@@ -78,7 +81,25 @@ class BaseNotes:
         self.get_starting_position(self.bpm_list)
 
     def get_starting_position(self, bpm_list: dict):
-        pass
+        starting_position = 0
+        cycle_time = bisect_left(list(bpm_list.keys()), self.touch_time)
+        value_list, key_list = list(bpm_list.values()), list(bpm_list.keys())
+        for t in range(0, cycle_time - 1, 1):
+            starting_position += value_list[t] * \
+                (key_list[t+1] - key_list[t])
+        starting_position += value_list[cycle_time - 1] * \
+            (self.touch_time - key_list[cycle_time - 1])
+        self.time_0_position = 0.001 * 0.001 * starting_position
+        now_position = self.time_0_position
+        for chart_t in range(0, self.touch_time + 1):
+            if chart_t == self.touch_time:
+                self.pos_per_frame[chart_t] = 0
+            if chart_t < self.touch_time:
+                self.pos_per_frame[chart_t] = now_position
+            if chart_t > self.touch_time:
+                pass
+            now_position -= 0.001 * 0.001 * \
+                value_list[bisect_left(list(bpm_list.keys()), chart_t) - 1]
 
 
 class Tap(BaseNotes):
@@ -155,7 +176,10 @@ class Arc(BaseNotes):
         """
         validate_position(start_time, "Arc", x_start_pos, y_start_pos)
         validate_position(end_time, "Arc", x_end_pos, y_end_pos)
-        self.end_time, self.x_start_pos, self.y_start_pos, self.x_end_pos, self.y_end_pos, \
-            self.arc_color, self.none_value, self.is_trace = end_time, x_start_pos, y_start_pos, \
+        self.end_time, self.x_start_pos, self.y_start_pos, self.movement_type, self.x_end_pos, self.y_end_pos, \
+            self.arc_color, self.none_value, self.is_trace = end_time, x_start_pos, y_start_pos, movement_type, \
             x_end_pos, y_end_pos, arc_color, none_value, is_trace
         super().__init__(start_time, 4, bpm_list)
+
+    def get_section_position(self):
+        

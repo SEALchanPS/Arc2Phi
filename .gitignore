@@ -310,3 +310,4 @@ temp/
 # Running File
 base_info_offset.txt
 timing_group_list.txt
+test.py
