@@ -180,6 +180,10 @@ class Arc(BaseNotes):
             self.arc_color, self.none_value, self.is_trace = end_time, x_start_pos, y_start_pos, movement_type, \
             x_end_pos, y_end_pos, arc_color, none_value, is_trace
         super().__init__(start_time, 4, bpm_list)
+        self.duration = end_time - start_time
+        if self.duration < 0:
+            raise ArcChartException(f"谱面时间为 0 时，处于打击的 Arc 具有不受支持的负持续时间。")
 
     def get_section_position(self):
-        
+        if len(str(self.movement_type)) == 4: # sisi or siso or sosi or soso
+            pass
