@@ -3,7 +3,7 @@
 import random
 import unittest
 
-from arcChartParser import *
+from arcaea.chartparser.__init__ import *
 
 
 class TestArcChartParser(unittest.TestCase):
@@ -22,7 +22,7 @@ class TestArcChartParser(unittest.TestCase):
         offset_is_given = random.randint(0, 5000)
         bytes_to_give = [f'AudioOffset: {offset_is_given}', '---', '(1,1)']
         ArcChart(bytes_to_give)
-        with open('base_info_offset.txt', 'r', encoding='utf-8') as offset_file:
+        with open('../base_info_offset.txt', 'r', encoding='utf-8') as offset_file:
             offset_in_file = offset_file.read()
         self.assertEqual(int(offset_in_file), offset_is_given)
 
@@ -32,7 +32,7 @@ class TestArcChartParser(unittest.TestCase):
         offset_is_given = random.randint(-5000, 0)
         bytes_to_give = [f'AudioOffset: {offset_is_given}', '---', '(1,1)']
         ArcChart(bytes_to_give)
-        with open('base_info_offset.txt', 'r', encoding='utf-8') as offset_file:
+        with open('../base_info_offset.txt', 'r', encoding='utf-8') as offset_file:
             offset_in_file = offset_file.read()
         self.assertEqual(int(offset_in_file), offset_is_given)
 
@@ -66,9 +66,9 @@ class TestArcChartParser(unittest.TestCase):
         self.assertEqual(timing_group_list[2].tap_list[0].trace, 3)
 
     def test_base_not_position_get(self):
-        with open("song_total_time.txt", "w", encoding="utf-8") as total_time_file:
+        with open("../song_total_time.txt", "w", encoding="utf-8") as total_time_file:
             total_time_file.write("2")
-        test_note = BaseNotes(1500, 1, {0:100, 1000:200})
+        test_note = NoteBase(1500, 1, {0:100, 1000:200})
         self.assertEqual(test_note.time_0_position, 200000 * 0.000001)
 
 

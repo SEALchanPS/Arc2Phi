@@ -3,7 +3,7 @@
 import os
 import pickle
 
-from assets import *
+from arcaea.assets import *
 
 
 def write_list_to_file(file: str, list_: list):
@@ -115,8 +115,7 @@ class ArcChart:
 
         # 结束时判定谱面特殊异常情况
         if not got_timing_group_0:
-            self.timing_group_value_dict[self.last_start_line_num +
-                                         1] = len(self.file_lines)
+            self.timing_group_value_dict[self.last_start_line_num + 1] = len(self.file_lines)
             self.this_start_line_num, self.this_end_line_num = 0, 0
         if self.this_end_line_num != 0 or self.this_start_line_num != 0:
             raise ArcChartException(
@@ -151,12 +150,12 @@ class ArcChart:
             offset (str): 谱面音乐延迟数值。本应为 float，但鉴于该值由文件读取且写入文件，故不做类型转换。
         """
         self.offset = offset
-        file = "base_info_offset.txt"
+        file = "../base_info_offset.txt"
         what_to_write = self.offset
         write_str_to_file(file, what_to_write)
 
 
-class TimingGroup():
+class TimingGroup:
     """该类用来创建 Timing Group 的实例。
     """
 
@@ -225,8 +224,10 @@ class TimingGroup():
         """
 
         arc_info: list = line.replace("(", "").replace(")", "").split(",")
-        this_arc = Arc(float(arc_info[0]), float(arc_info[1]), float(arc_info[2]), float(arc_info[3]), str(arc_info[4]), float(
-            arc_info[5]), float(arc_info[6]), int(arc_info[7]), str(arc_info[8]), bool(arc_info[9]), self.bpm_list_dict)
+        this_arc = Arc(
+            float(arc_info[0]), float(arc_info[1]), float(arc_info[2]), float(arc_info[3]), str(arc_info[4]), float(
+                arc_info[5]), float(arc_info[6]), int(arc_info[7]), str(arc_info[8]), bool(arc_info[9]),
+            self.bpm_list_dict)
         self.arc_list.append(this_arc)
         if line.split("[")[1]:
             arctap_info = line.replace("]", "").split("[")

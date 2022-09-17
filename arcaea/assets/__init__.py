@@ -59,7 +59,7 @@ def validate_position(touch_time: float, note_type: str, x_position: float, y_po
             f"谱面时间为 {touch_time} 时，处于打击的 {note_type} 是非正常的超界 Note。其纵向坐标为 {y_position}。")
 
 
-class BaseNotes:
+class NoteBase:
     """所有 Note 的基类。
     """
 
@@ -102,7 +102,7 @@ class BaseNotes:
                 value_list[bisect_left(list(bpm_list.keys()), chart_t) - 1]
 
 
-class Tap(BaseNotes):
+class Tap(NoteBase):
     """Tap Note 类
     """
 
@@ -118,7 +118,7 @@ class Tap(BaseNotes):
         self.trace = trace
 
 
-class Hold(BaseNotes):
+class Hold(NoteBase):
     """Hold Note 类
     """
 
@@ -135,7 +135,7 @@ class Hold(BaseNotes):
         self.end_time, self.trace = end_time, trace
 
 
-class SkyNote(BaseNotes):
+class SkyNote(NoteBase):
     """Sky Note 类
     """
 
@@ -152,7 +152,7 @@ class SkyNote(BaseNotes):
         self.x_position, self.y_position = x_position, y_position
 
 
-class Arc(BaseNotes):
+class Arc(NoteBase):
     """Arc Note 类
     """
 
