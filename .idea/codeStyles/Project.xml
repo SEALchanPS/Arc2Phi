@@ -1,0 +1,19 @@
+<component name="ProjectCodeStyleConfiguration">
+  <code_scheme name="Project" version="173">
+    <Python>
+      <option name="NEW_LINE_AFTER_COLON" value="true" />
+      <option name="USE_CONTINUATION_INDENT_FOR_PARAMETERS" value="false" />
+      <option name="OPTIMIZE_IMPORTS_SORT_NAMES_IN_FROM_IMPORTS" value="true" />
+      <option name="FROM_IMPORT_PARENTHESES_FORCE_IF_MULTILINE" value="true" />
+    </Python>
+    <codeStyleSettings language="Python">
+      <option name="RIGHT_MARGIN" value="120" />
+      <option name="KEEP_LINE_BREAKS" value="false" />
+      <option name="CALL_PARAMETERS_LPAREN_ON_NEXT_LINE" value="true" />
+      <option name="METHOD_PARAMETERS_LPAREN_ON_NEXT_LINE" value="true" />
+      <option name="WRAP_LONG_LINES" value="true" />
+      <option name="WRAP_ON_TYPING" value="1" />
+      <option name="SOFT_MARGINS" value="76" />
+    </codeStyleSettings>
+  </code_scheme>
+</component>
