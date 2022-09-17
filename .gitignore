@@ -303,3 +303,11 @@ cython_debug/
 *.code-workspace
 
 # End of https://www.toptal.com/developers/gitignore/api/python,visualstudiocode,pycharm
+
+# SEALchan P.S.' Temp File When Coding
+temp/
+
+# Running File
+base_info_offset.txt
+timing_group_list.txt
+test.py
