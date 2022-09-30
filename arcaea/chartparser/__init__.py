@@ -134,7 +134,7 @@ class ArcChart:
             timing_group_num += 1
 
         # 将 Timing Group 实例保存至文件
-        file = "timing_group_list.txt"
+        file = "../timing_group_list.txt"
         list_ = timing_group_list
         write_list_to_file(file, list_)
 

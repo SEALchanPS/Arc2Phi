@@ -65,7 +65,9 @@ class TestArcChartParser(unittest.TestCase):
         self.assertEqual(timing_group_list[2].tg_num, 2)
         self.assertEqual(timing_group_list[2].tap_list[0].trace, 3)
 
-    def test_base_not_position_get(self):
+    def test_if_it_can_get_initial_position(self):
+        """该函数用来测试 Arcaea 谱面解析器能否获得正确的 Note 初始位置。
+        """
         with open("../song_total_time.txt", "w", encoding="utf-8") as total_time_file:
             total_time_file.write("2")
         test_note = NoteBase(1500, 1, {0:100, 1000:200})
