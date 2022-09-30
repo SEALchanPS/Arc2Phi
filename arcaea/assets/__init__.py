@@ -5,6 +5,7 @@
 
 
 from bisect import bisect_left
+from arcfutil.aff.easing import slicer
 
 
 class ArcChartException(Exception):
@@ -83,7 +84,7 @@ class NoteBase:
 
     def get_note_front_position(self, bpm_list: dict):
         """该函数用来计算 Note 的前端位置。
-        
+
         Args:
             bpm_list (dict): 该谱面的 BPM 列表。各子类初始化函数将会根据该字典来计算相对位置。
         """
@@ -115,13 +116,11 @@ class NoteBase:
         # 以下的计算从第 0 帧开始，故当前帧的位置就是该 Note 的初始位置。
         this_frame_position = self.time_0_position
         # 开始计算每一帧的位置。
-        for play_time in range(0, self.touch_time + 1):
-            if play_time == self.touch_time:
+        for play_time in range(0, self.song_total_time + 1):
+            if play_time == self.song_total_time:
                 self.pos_per_frame[play_time] = 0
-            if play_time < self.touch_time:
+            else:
                 self.pos_per_frame[play_time] = this_frame_position
-            if play_time > self.touch_time:
-                pass
             # 将这一帧的位置保留给下一次计算。
             this_frame_position -= 0.001 * 0.001 * \
                 value_list[bisect_left(list(bpm_list.keys()), play_time) - 1]
@@ -209,10 +208,37 @@ class Arc(NoteBase):
             x_end_pos, y_end_pos, arc_color, none_value, is_trace
         super().__init__(start_time, 4, bpm_list)
         self.duration = end_time - start_time
+        self.xy_relative_position: dict = None
+        self.z_relative_position: dict = None
         if self.duration < 0:
             # 如果结束时间小于开始时间，抛出异常。
-            raise ArcChartException(f"谱面时间为 0 时，处于打击的 Arc 具有不受支持的负持续时间。")
+            raise ArcChartException("谱面时间为 0 时，处于打击的 Arc 具有不受支持的负持续时间。")
+
+        # 四种运动类型分别是 sisi，siso，sosi 和 soso
+        # 其中 b = bezier(), s = linear(), si = sine(), so = cosine()
+        # 每一个 Arc 的缓动类型由 x 轴缓动和 y 轴缓动组成，例如 sisi 表示 x 轴为 sine 缓动，y 轴为 sine 缓动。
+        # 特别地，如果 y 轴的缓动类型是 s，那么 y 轴的缓动类型可以省略不写，而只写 x 轴的缓动类型。
+        # 例如，若一个 Arc 的 x 轴缓动类型为 b，y 轴缓动类型为 s，则该 Arc 的缓动类型理应为 bs：但可以省略为 b。
+        if len(str(self.movement_type)) == 4:
+            self.movement_for_x = self.movement_type[0:2]
+            self.movement_for_y = self.movement_type[2:4]
+        elif len(str(self.movement_type)) == 2:
+            if self.movement_type[1] == "i":
+                self.movement_for_x = "si"
+                self.movement_for_y = "s"
+            elif self.movement_type[1] == "o":
+                self.movement_for_x = "so"
+                self.movement_for_y = "s"
+        elif len(str(self.movement_type)) == 1:
+            if self.movement_type == "b":
+                self.movement_for_x = "b"
+                self.movement_for_y = "s"
+            elif self.movement_type == "s":
+                self.movement_for_x = "s"
+                self.movement_for_y = "s"
 
     def get_self_relative_position(self):
-        if len(str(self.movement_type)) == 4: # 四种运动类型分别是 sisi，siso，sosi 和 soso
-            pass
+        for touch_time in range(0, self.duration + 1):
+            self.xy_relative_position[touch_time] = (slicer(touch_time, 0, self.duration, self.x_start_pos, self.x_end_pos, self.movement_for_x), slicer(
+                touch_time, 0, self.duration, self.y_start_pos, self.y_end_pos, self.movement_for_y))
+            self.z_relative_position[touch_time] = 0 - self.pos_per_frame[touch_time + self.start_time]
