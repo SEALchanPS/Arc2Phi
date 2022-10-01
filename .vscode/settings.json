@@ -7,5 +7,6 @@
         "timinggroup"
         "arctap"
         "arcfutil"
+        "pylint"
     ]
 }
