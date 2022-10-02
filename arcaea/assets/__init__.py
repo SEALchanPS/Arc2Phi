@@ -6,13 +6,13 @@
 
 from bisect import bisect_left
 from arcfutil.aff.easing import slicer
-
+import os
 
 class ArcChartException(Exception):
     """这个类用来抛出解析 Arcaea 谱面时的异常。
     """
 
-    def __init__(self, exception_info):
+    def __init__(self, exception_info: str):
         """该函数用来抛出 Arcaea 谱面解析异常。
 
         Args:
@@ -64,7 +64,7 @@ class NoteBase:
     """所有 Note 的基类。
     """
 
-    def __init__(self, touch_time: float, note_type: int, bpm_list: dict) -> None:
+    def __init__(self, touch_time: float, note_type: int, bpm_list: dict[float, float]) -> None:
         """该函数用来初始化生成所有 Note。
 
         Args:
@@ -78,9 +78,13 @@ class NoteBase:
         self.touch_time = touch_time
         self.note_type = note_type
         self.pos_per_frame = {}
-        with open("../../song_total_time.txt", 'r', encoding="utf-8") as time_:
-            self.song_total_time = time_.read()
+        with open(os.path.abspath(r"song_total_time.txt"), "r", encoding="utf-8") as time_:
+            self.song_total_time = float(time_.read())
+        # with open("../../song_total_time.txt", 'r', encoding="utf-8") as time_:
+        #     self.song_total_time = time_.read()
         self.get_note_front_position(self.bpm_list)
+        # print(os.path.realpath(r"D:\Development\Arc2Phi\song_total_time.txt"))
+
 
     def get_note_front_position(self, bpm_list: dict):
         """该函数用来计算 Note 的前端位置。
@@ -116,7 +120,7 @@ class NoteBase:
         # 以下的计算从第 0 帧开始，故当前帧的位置就是该 Note 的初始位置。
         this_frame_position = self.time_0_position
         # 开始计算每一帧的位置。
-        for play_time in range(0, self.song_total_time + 1):
+        for play_time in range(0, self.song_total_time + 1.0):
             if play_time == self.song_total_time:
                 self.pos_per_frame[play_time] = 0
             else:
@@ -219,9 +223,12 @@ class Arc(NoteBase):
         # 每一个 Arc 的缓动类型由 x 轴缓动和 y 轴缓动组成，例如 sisi 表示 x 轴为 sine 缓动，y 轴为 sine 缓动。
         # 特别地，如果 y 轴的缓动类型是 s，那么 y 轴的缓动类型可以省略不写，而只写 x 轴的缓动类型。
         # 例如，若一个 Arc 的 x 轴缓动类型为 b，y 轴缓动类型为 s，则该 Arc 的缓动类型理应为 bs：但可以省略为 b。
+
+        # 若 y 轴的缓动类型不是 s
         if len(str(self.movement_type)) == 4:
             self.movement_for_x = self.movement_type[0:2]
             self.movement_for_y = self.movement_type[2:4]
+        # 若 y 轴的缓动类型是 s
         elif len(str(self.movement_type)) == 2:
             if self.movement_type[1] == "i":
                 self.movement_for_x = "si"
@@ -238,6 +245,8 @@ class Arc(NoteBase):
                 self.movement_for_y = "s"
 
     def get_self_relative_position(self):
+        """该函数用来计算该 Arc 的相对位置。
+        """
         for touch_time in range(0, self.duration + 1):
             self.xy_relative_position[touch_time] = (slicer(touch_time, 0, self.duration, self.x_start_pos, self.x_end_pos, self.movement_for_x), slicer(
                 touch_time, 0, self.duration, self.y_start_pos, self.y_end_pos, self.movement_for_y))
